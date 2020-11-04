@@ -1,8 +1,5 @@
 #include <stdio.h>
 #include "Output.h"
-#include <QWidget>
-#include <QApplication>
-#include <QMacNativeWidget>
 
 // Must return an instance subclass of AudioBox ( Your plugin class )
 extern "C" AudioBox*create()
@@ -49,12 +46,6 @@ struct CallbackData
 
 OSStatus AudioCallback( void *inRefCon,AudioUnitRenderActionFlags *ioActionFlags,const AudioTimeStamp *inTimeStamp,UInt32 inBusNumber,UInt32 inNumberFrames,AudioBufferList *ioData)
 {
-    Q_UNUSED(inRefCon);
-    Q_UNUSED(ioActionFlags);
-    Q_UNUSED(inTimeStamp);
-    Q_UNUSED(inBusNumber);
-    Q_UNUSED(inNumberFrames);
-
     // Reads the audio output
     CallbackData *data = (CallbackData*)inRefCon;
     data->callBackFunc(ioData->mBuffers[0].mData,512,1,data->userData);
@@ -131,11 +122,6 @@ void Output::Uninitialize()
 void Output::start()
 {
     AudioOutputUnitStart(toneUnit);
-}
-
-int Output::getWindow()
-{
-    return window->winId();
 }
 
 Output::Output()

@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <QDebug>
 
 // Apple Includes
 #ifdef __APPLE__
@@ -146,17 +145,13 @@ public:
     };
 
     // General info
-    const char *getName();
-    const char *getManufacturer();
+    virtual const char *getName(){return NULL;};
+    virtual const char *getManufacturer(){return NULL;};
     AudioBox::Type getType();
-    AudioBox::UI getUIType();
+    virtual AudioBox::UI getUIType(){ return UI::No;};
     void *getUserData()
     {
         return _userData;
-    }
-    virtual int getWindow()
-    {
-        return _winID;
     }
 
 
@@ -220,7 +215,6 @@ public:
 
 private:
     void *_userData;
-    int _winID;
 
     // Sample rates
     struct SampleRate
@@ -289,18 +283,27 @@ typedef void destroy_t(AudioBox*);
 
 AudioBox *loadBox(const char *path)
 {
-
-  void *handle = dlopen(path, RTLD_LAZY);
-
+  char *dspPath = new char[strlen(path)+10];
+  strcpy(dspPath,path);
+  dspPath = strcat(dspPath,"/DSP/Core");
+  void *handle = dlopen(dspPath, RTLD_LAZY);
   if(handle == NULL)
   {
     printf("%s%s\n","Could not load AudioBox: ",dlerror());
     return NULL;
   }
-
   create_t *create = (create_t*) dlsym(handle, "create");
-
-
+  return create();
+}
+AudioBox *loadDSP(const char *path)
+{
+  void *handle = dlopen(path, RTLD_LAZY);
+  if(handle == NULL)
+  {
+    printf("%s%s\n","Could not load AudioBox: ",dlerror());
+    return NULL;
+  }
+  create_t *create = (create_t*) dlsym(handle, "create");
   return create();
 }
 

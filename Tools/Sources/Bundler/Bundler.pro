@@ -1,21 +1,15 @@
-QT       += core gui
+TEMPLATE = app
+CONFIG += console c++11
+CONFIG -= app_bundle
+CONFIG -= qt
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-CONFIG += c++11
-
-INCLUDEPATH += ../../SDK
-
-DESTDIR = ../../Builds
-
+INCLUDEPATH += ../../../SDK
+DESTDIR = ../../
 
 SOURCES += \
-    main.cpp \
-    MainWindow.cpp
+        main.cpp
 
-HEADERS += \
-    MainWindow.h \
-
+RESOURCES +=
 
 macx {
     QMAKE_LFLAGS += -F /System/Library/Frameworks/CoreFoundation.framework/
@@ -30,8 +24,3 @@ macx {
     LIBS += -framework AudioUnit
     LIBS += -framework AppKit
 }
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target

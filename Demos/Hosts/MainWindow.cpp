@@ -1,11 +1,12 @@
 #include "MainWindow.h"
-#include "../AudioBox/AudioBox.h"
+#include <AudioBox.h>
 #include <QDebug>
 #include <QWindow>
+#include <QCoreApplication>
 
-void callBack(void *buffer,unsigned int bufferSize,AudioBox::Format format,void *userData)
+void callBack(void *buffer,unsigned int bufferSize,unsigned int channels,void *userData)
 {
-    Q_UNUSED(format);
+    Q_UNUSED(channels);
     Q_UNUSED(userData);
 
     float *theta = (float*)userData;
@@ -27,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     for(unsigned int i = 0; i < size; i++)
       qDebug() << "Device:" << list[i].name;
 
-    AudioBox *box = loadBox("/Users/eduardo/Desktop/Cuarzo/Projects/AudioBoxRelease/libPluginDemo.1.0.0.dylib");
+    AudioBox *box = loadBox(QString(QCoreApplication::applicationDirPath() + "/../../../Output.audiobox").toUtf8().data());
 
     if(box == 0)
     {

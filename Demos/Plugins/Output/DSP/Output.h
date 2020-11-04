@@ -2,7 +2,6 @@
 #define OUTPUT
 
 #include <AudioBox.h>
-#include <QWidget>
 
 class Output : public AudioBox
 {
@@ -18,7 +17,6 @@ public:
   void Uninitialize();
   void start();
   int getWindow();
-  QWidget *window;
   AudioUnit toneUnit;
 };
 
