@@ -1,14 +1,19 @@
-QT -= gui
-
-CONFIG += c++11 console
+CONFIG += c++11
+CONFIG += release
+CONFIG += no_plugin_name_prefix
+CONFIG += no_plugin_extension
 CONFIG -= app_bundle
+QMAKE_EXTENSION_SHLIB = dsp
 
-INCLUDEPATH += ../../../SDK
-DESTDIR = ../../
+# Path to the AudioBox SDK ( Fix it if necessary )
+SDK_PATH = ../../../../SDK/
+BUNDLER_PATH = ../../../../Tools/Bundler
 
-SOURCES += main.cpp
+# Output directory ( To your choice )
+DESTDIR = $${SDK_PATH}../Builds/
 
-RESOURCES +=
+# Includes the SDK path
+INCLUDEPATH += $${SDK_PATH}
 
 macx {
     QMAKE_LFLAGS += -F /System/Library/Frameworks/CoreFoundation.framework/
@@ -23,10 +28,4 @@ macx {
     LIBS += -framework AudioUnit
     LIBS += -framework AppKit
 }
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
 

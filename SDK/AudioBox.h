@@ -113,7 +113,7 @@ public:
     enum UI
     {
         No = 0,
-        Quartz = 1,
+        Cocoa = 1,
         X11 = 2,
         Wayland = 3
     };
@@ -123,7 +123,8 @@ public:
     {
         Output = 0,
         Input = 1,
-        Effect = 2
+        Generator = 2,
+        Effect = 3
     };
 
     // Stream formats
@@ -204,13 +205,26 @@ public:
 
     void setCallbackFunction(void (*callBack)(void*,unsigned int,unsigned int,void*),void *userData)
     {
-        _callBack = callBack;
+        externalCallback = callBack;
         _userData = userData;
     }
 
     virtual void Initialize(){};
     virtual void Uninitialize(){};
     virtual void start(){};
+    virtual void renderAudio(void *inBuffer,unsigned int framesNum,unsigned int channels)
+    {
+      (void)inBuffer;
+      (void)framesNum;
+      (void)channels;
+    }
+
+    void internalCallback(void *inBuffer,unsigned int framesNum,unsigned int channels, void*userData)
+    {
+      externalCallback(inBuffer,framesNum,channels,userData);
+      renderAudio(inBuffer,framesNum,channels);
+    }
+
     virtual ~AudioBox(){}
 
 private:
@@ -227,7 +241,7 @@ private:
     SampleRate _sampleRates;
 
 protected:
-    void (*_callBack)(void*,unsigned int,unsigned int,void*);
+    void (*externalCallback)(void*,unsigned int,unsigned int,void*);
 
     // Add a sample rate that the plugin can work with
     void addSampleRate(unsigned int sampleRate)
@@ -285,7 +299,7 @@ AudioBox *loadBox(const char *path)
 {
   char *dspPath = new char[strlen(path)+10];
   strcpy(dspPath,path);
-  dspPath = strcat(dspPath,"/DSP/Core");
+  dspPath = strcat(dspPath,"/DSP/Core.dsp");
   void *handle = dlopen(dspPath, RTLD_LAZY);
   if(handle == NULL)
   {
@@ -305,6 +319,17 @@ AudioBox *loadDSP(const char *path)
   }
   create_t *create = (create_t*) dlsym(handle, "create");
   return create();
+}
+
+void callbackJoin(void *buffer,unsigned int bufferSize,unsigned int channels,void *userData)
+{
+  AudioBox *source = (AudioBox*)userData;
+  source->renderAudio(buffer,bufferSize,channels);
+}
+
+void connectBoxes(AudioBox *source,AudioBox *destination)
+{
+  destination->setCallbackFunction(callbackJoin,source);
 }
 
 #endif

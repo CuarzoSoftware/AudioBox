@@ -3,7 +3,7 @@
 
 #include <AudioBox.h>
 
-class Output : public AudioBox
+class EQ : public AudioBox
 {
 public:
   // Properties
@@ -12,12 +12,11 @@ public:
   AudioBox::Type getType();
   AudioBox::UI getUIType();
 
-  Output();
+  EQ();
   void Initialize();
   void Uninitialize();
   void start();
   int getWindow();
-  AudioUnit toneUnit;
 };
 
 #endif

@@ -21,6 +21,3 @@ HEADERS += \
 
 target.path = $${DESTDIR}/
 !isEmpty(target.path): INSTALLS += target
-
-QMAKE_POST_LINK += $$quote($${BUNDLER_PATH} $${DESTDIR}/Core.dsp $${DESTDIR}$$escape_expand(\n\t))
-

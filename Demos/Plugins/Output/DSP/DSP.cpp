@@ -1,10 +1,10 @@
 #include <stdio.h>
-#include "Output.h"
-
+#include <DSP.h>
+#include <QDebug>
 // Must return an instance subclass of AudioBox ( Your plugin class )
 extern "C" AudioBox*create()
 {
-  return new Output();
+  return new DSP();
 }
 
 // Destroy the plugin instance
@@ -14,46 +14,53 @@ extern "C" void destoy(AudioBox *box)
 }
 
 // Returns the plugin name
-const char *Output::getName()
+const char *DSP::getName()
 {
     return "Output";
 }
 
 // Return your company name
-const char *Output::getManufacturer()
+const char *DSP::getManufacturer()
 {
     return "Cuarzo";
 }
 
 // Return the type of plugin
-AudioBox::Type Output::getType()
+AudioBox::Type DSP::getType()
 {
     return AudioBox::Type::Output;
 }
 
 // Return the type of UI
-AudioBox::UI Output::getUIType()
+AudioBox::UI DSP::getUIType()
 {
     return AudioBox::UI::No;
 }
 
-struct CallbackData
-{
-    int i = 3;
-    void (*callBackFunc)(void*,unsigned int,unsigned int,void*);
-    void *userData;
-};
 
 OSStatus AudioCallback( void *inRefCon,AudioUnitRenderActionFlags *ioActionFlags,const AudioTimeStamp *inTimeStamp,UInt32 inBusNumber,UInt32 inNumberFrames,AudioBufferList *ioData)
 {
-    // Reads the audio output
-    CallbackData *data = (CallbackData*)inRefCon;
-    data->callBackFunc(ioData->mBuffers[0].mData,512,1,data->userData);
+    // Avoid unused warnings
+    (void)ioActionFlags;
+    (void)inTimeStamp;
+    (void)inBusNumber;
+    (void)inNumberFrames;
 
+    // Reads the audio output
+    AudioBox *box = (AudioBox*)inRefCon;
+    box->internalCallback(ioData->mBuffers[0].mData,512,ioData->mBuffers->mNumberChannels,box->getUserData());
     return noErr;
 }
 
-void Output::Initialize()
+void DSP::renderAudio(void *inBuffer,unsigned int bufferSize,unsigned int channels)
+{
+    // Avoid unused warnings
+    (void)inBuffer;
+    (void)bufferSize;
+    (void)channels;
+}
+
+void DSP::Initialize()
 {
     // The output audio unit description
     AudioComponentDescription defaultOutputDescription;
@@ -67,15 +74,10 @@ void Output::Initialize()
     AudioComponent defaultOutput = AudioComponentFindNext(NULL, &defaultOutputDescription);
     AudioComponentInstanceNew(defaultOutput, &toneUnit);
 
-    CallbackData *data = new CallbackData;
-    data->i = 2;
-    data->callBackFunc = _callBack;
-    data->userData = getUserData();
-
     // Set the audio callback function
     AURenderCallbackStruct input;
     input.inputProc = AudioCallback;
-    input.inputProcRefCon = data;
+    input.inputProcRefCon = this;
 
     AudioUnitSetProperty(toneUnit,
         kAudioUnitProperty_SetRenderCallback,
@@ -114,17 +116,17 @@ void Output::Initialize()
     AudioUnitInitialize(toneUnit);
 }
 
-void Output::Uninitialize()
+void DSP::Uninitialize()
 {
     AudioUnitUninitialize(toneUnit);
 }
 
-void Output::start()
+void DSP::start()
 {
     AudioOutputUnitStart(toneUnit);
 }
 
-Output::Output()
+DSP::DSP()
 {
     addSampleRate(44100);
     addSampleRate(48000);
