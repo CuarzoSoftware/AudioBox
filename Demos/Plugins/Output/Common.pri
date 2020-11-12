@@ -2,18 +2,20 @@ CONFIG += c++11
 CONFIG += release
 CONFIG += no_plugin_name_prefix
 CONFIG += no_plugin_extension
-QMAKE_EXTENSION_SHLIB = dsp
-CONFIG -= app_bundle
+QMAKE_EXTENSION_SHLIB = audiobox
 
-# Path to the AudioBox SDK ( Fix it if necessary )
-SDK_PATH = ../../../../SDK/
-BUNDLER_PATH = ../../../../Tools/Bundler
+LIBS= -L/usr/lib -lAudioBox
 
-# Output directory ( To your choice )
-DESTDIR = $${SDK_PATH}../Builds/
+# Template must be lib ( Don't touch )
+TEMPLATE = lib
 
-# Includes the SDK path
-INCLUDEPATH += $${SDK_PATH}
+# Naming configuration ( Don't touch )
+CONFIG += plugin
+
+# Must be defined only for plugins ( Don't touch )
+DEFINES += AUDIOBOX_PLUGIN
+
+BUNDLER_PATH = ../../../Tools/Bundler
 
 # Necessary Mac OS X Libraries
 macx {
@@ -28,5 +30,11 @@ macx {
     LIBS += -framework AudioToolbox
     LIBS += -framework AudioUnit
     LIBS += -framework AppKit
+
+    # Creates the bundle
+    QMAKE_POST_LINK += $$quote($${BUNDLER_PATH} $${DESTDIR}/Core.dsp $${DESTDIR}$$escape_expand(\n\t))
+
 }
+
+
 

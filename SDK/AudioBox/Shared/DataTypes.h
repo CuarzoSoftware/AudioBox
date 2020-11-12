@@ -1,0 +1,4 @@
+#ifndef DATATYPESSHARED_H
+#define DATATYPESSHARED_H
+
+#endif // DATATYPES_H
