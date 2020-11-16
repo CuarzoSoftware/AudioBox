@@ -48,7 +48,8 @@ La secuencia comienza al llamar el método **start()** de una unidad de **salida
 De la misa forma, la unidad conectada puede compartir el buffer con unidades conectadas a sus buses de entrada y esperar el retorno de los callbacks, para luego realizar su propio procesamiento y enviarlo de vuelta a la unidad de salida.
 
 ![](Design/Processing-Sequence.png)
-<div style="color:#666;font-style:italic;font-size:12px">Ejemplo con tres unidades: La unidad de salida solicita datos a la unidad de efecto, la unidad de efecto solicita datos a la unidad de entrada, la unidad de entrada retorna los datos capturados del micrófono a la unidad de efecto, la unidad de efecto aplica su propio procesamiento y retorna los datos a la unidad de salida, por último la unidad de salida se encarga de enviar el sonido al dispositivo de audio externo.</div><br>
+<sub><i>Ejemplo con tres unidades: La unidad de salida solicita datos a la unidad de efecto, la unidad de efecto solicita datos a la unidad de entrada, la unidad de entrada retorna los datos capturados del micrófono a la unidad de efecto, la unidad de efecto aplica su propio procesamiento y retorna los datos a la unidad de salida, por último la unidad de salida se encarga de enviar el sonido al dispositivo de audio externo.</i></sub>
+
 La condición de contar con una unidad de entrada y salida existe únicamente si se utiliza el método **connectBus()** para conectar los buses de entrada y salida entre unidades.
 
 Es posible asignar los callbacks entre unidades manualmente, o a métodos definidos por el usuario utilizando el método **setCallback()**.<br>Esto permite utilizar unidades directamente, sin necesidad de contar con una unidad de entrada y otra de salida.
