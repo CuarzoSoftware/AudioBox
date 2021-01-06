@@ -1,35 +1,28 @@
-TEMPLATE = lib
+QT       += core gui
 
-HEADERS += \
-        ABOutput.h \
-        AudioBox.h \
-        Linux/DataTypes.h \
-        Linux/Includes.h \
-        MacOS/DataTypes.h \
-        MacOS/Includes.h \
-        MacOS/Utils.h \
-        Shared/DataTypes.h \
-        Shared/Includes.h
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-root.path = /usr/include/AudioBox/
-shared.path = /usr/include/AudioBox/Shared
-linux.path = /usr/include/AudioBox/Linux
-macos.path = /usr/include/AudioBox/MacOS
+CONFIG += c++11
 
-root.files += $$PWD/*.h
-shared.files += $$PWD/Shared/*.h
-linux.files += $$PWD/Linux/*.h
-macos.files += $$PWD/MacOS/*.h
+# The following define makes your compiler emit warnings if you use
+# any Qt feature that has been marked deprecated (the exact warnings
+# depend on your compiler). Please consult the documentation of the
+# deprecated API in order to know how to port your code away from it.
+DEFINES += QT_DEPRECATED_WARNINGS
 
-libraryFiles.path = /usr/lib/
-libraryFiles.files = $$OUT_PWD/*.so*
-
-INSTALLS += root
-INSTALLS += shared
-INSTALLS += linux
-INSTALLS += macos
-INSTALLS += libraryFiles
+# You can also make your code fail to compile if it uses deprecated APIs.
+# In order to do so, uncomment the following line.
+# You can also select to disable deprecated APIs only up to a certain version of Qt.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ABOutput.cpp \
+    main.cpp \
     AudioBox.cpp
+
+HEADERS += \
+    AudioBox.h
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
